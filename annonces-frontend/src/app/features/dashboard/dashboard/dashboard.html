@@ -1,0 +1,218 @@
+<div class="dashboard-container">
+
+  <div class="dashboard-header">
+    <div>
+      <h1>Bonjour, {{ userPrenom }}</h1>
+      <p>Tableau de bord vendeur</p>
+    </div>
+    <a routerLink="/annonces/create" class="btn-nouvelle">+ Nouvelle annonce</a>
+  </div>
+
+  <!-- Stats cards -->
+  @if (stats) {
+    <div class="stats-grid">
+      <div class="stat-card">
+        <span class="stat-label">Annonces actives</span>
+        <div class="stat-valeur" style="color:#3b82f6">
+          {{ stats.annoncesActives }}<span class="stat-unite">annonces</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Annonces vendues</span>
+        <div class="stat-valeur" style="color:#10b981">
+          {{ stats.annoncesVendues }}<span class="stat-unite">vendues</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Vues totales</span>
+        <div class="stat-valeur" style="color:#f59e0b">
+          {{ stats.totalVues }}<span class="stat-unite">vues</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Total favoris</span>
+        <div class="stat-valeur" style="color:#ef4444">
+          {{ stats.totalFavoris }}<span class="stat-unite">favoris</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Prix moyen</span>
+        <div class="stat-valeur" style="color:#8b5cf6">
+          {{ stats.prixMoyen | number:'1.0-0' }}<span class="stat-unite">DH</span>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Onglets -->
+  <div class="onglets">
+    <button [class.actif]="ongletActif === 'stats'"
+      (click)="changerOnglet('stats')">Mes annonces</button>
+    <button [class.actif]="ongletActif === 'favoris'"
+      (click)="changerOnglet('favoris')">
+      Favoris ({{ favoris.length }})
+    </button>
+    <button [class.actif]="ongletActif === 'messages'"
+      (click)="changerOnglet('messages')">
+      Messages
+      @if (messagesNonLus() > 0) {
+        <span class="badge-notif">{{ messagesNonLus() }}</span>
+      }
+    </button>
+    @if (stats?.meilleuresAnnonces?.length > 0) {
+      <button [class.actif]="ongletActif === 'top'"
+        (click)="changerOnglet('top')">Top annonces</button>
+    }
+  </div>
+
+  <!-- Onglet Mes annonces -->
+  @if (ongletActif === 'stats') {
+    <div class="section">
+      @if (isLoading) {
+        <p style="color:#6b7280;padding:2rem">Chargement...</p>
+      } @else if (mesAnnonces.length === 0) {
+        <div style="text-align:center;padding:3rem;color:#6b7280">
+          <p>Vous n'avez pas encore d'annonces.</p>
+          <a routerLink="/annonces/create"
+            style="color:#3b82f6;margin-top:1rem;display:block">
+            Publier ma première annonce
+          </a>
+        </div>
+      } @else {
+        <div class="annonces-table">
+          <div class="table-header">
+            <span>Annonce</span>
+            <span>Prix</span>
+            <span>Ville</span>
+            <span>Vues</span>
+            <span>Statut</span>
+            <span>Actions</span>
+          </div>
+          @for (annonce of mesAnnonces; track annonce.id) {
+            <div class="table-row">
+              <span class="annonce-titre">{{ annonce.titre }}</span>
+              <span>{{ annonce.prix }} DH</span>
+              <span>{{ annonce.ville }}</span>
+              <span>{{ annonce.vues }}</span>
+              <span>
+                <span class="badge"
+                  [class.active]="annonce.statut === 'ACTIVE'"
+                  [class.vendue]="annonce.statut === 'VENDUE'">
+                  {{ annonce.statut }}
+                </span>
+              </span>
+              <span class="actions">
+                <a [routerLink]="['/annonces', annonce.id]"
+                  class="btn-voir">Voir</a>
+                <button class="btn-statut"
+                  [class.btn-vendre]="annonce.statut === 'ACTIVE'"
+                  [class.btn-reactiver]="annonce.statut === 'VENDUE'"
+                  [disabled]="actionEnCours === annonce.id"
+                  (click)="changerStatut(annonce, getProchainStatut(annonce.statut))">
+                  @if (actionEnCours === annonce.id) { ... }
+                  @else { {{ getLabelBouton(annonce.statut) }} }
+                </button>
+              </span>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Onglet Favoris -->
+  @if (ongletActif === 'favoris') {
+    <div class="section">
+      @if (favoris.length === 0) {
+        <p style="text-align:center;padding:3rem;color:#6b7280">
+          Vous n'avez pas encore d'annonces en favoris.
+        </p>
+      } @else {
+        <div class="favoris-grid">
+          @for (annonce of favoris; track annonce.id) {
+            <a [routerLink]="['/annonces', annonce.id]" class="favori-card">
+              <img [src]="annonce.imagePrincipaleUrl || 'https://placehold.co/300x200'"
+                [alt]="annonce.titre"/>
+              <div class="favori-body">
+                <h3>{{ annonce.titre }}</h3>
+                <div class="favori-footer">
+                  <span class="prix">{{ annonce.prix }} DH</span>
+                  <span class="ville">{{ annonce.ville }}</span>
+                </div>
+              </div>
+            </a>
+          }
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Onglet Messages -->
+  @if (ongletActif === 'messages') {
+    <div class="section">
+      @if (messages.length === 0) {
+        <p style="text-align:center;padding:3rem;color:#6b7280">
+          Aucun message pour le moment.
+        </p>
+      } @else {
+        <div class="messages-list">
+          @for (msg of messages; track msg.id) {
+            <div class="message-item" [class.non-lu]="!msg.lu">
+              <div class="message-avatar">
+                {{ msg.expediteurPrenom[0] }}{{ msg.expediteurNom[0] }}
+              </div>
+              <div class="message-content">
+                <div class="message-header">
+                  <span class="message-auteur">
+                    {{ msg.expediteurPrenom }} {{ msg.expediteurNom }}
+                  </span>
+                  <span class="message-annonce">
+                    re: {{ msg.annoncetitre || msg.annonceTitre }}
+                  </span>
+                  <span class="message-date">
+                    {{ msg.createdAt | date:'dd/MM/yyyy HH:mm' }}
+                  </span>
+                </div>
+                <p class="message-texte">{{ msg.contenu }}</p>
+              </div>
+              @if (!msg.lu) {
+                <span class="badge-nouveau">Nouveau</span>
+              }
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Onglet Top annonces -->
+  @if (ongletActif === 'top' && stats?.meilleuresAnnonces) {
+    <div class="section">
+      <div class="annonces-table">
+        <div class="table-header">
+          <span>Annonce</span>
+          <span>Catégorie</span>
+          <span>Prix</span>
+          <span>Vues</span>
+          <span>Statut</span>
+        </div>
+        @for (annonce of stats.meilleuresAnnonces; track annonce.id) {
+          <div class="table-row">
+            <span class="annonce-titre">{{ annonce.titre }}</span>
+            <span>{{ annonce.categorie }}</span>
+            <span>{{ annonce.prix }} DH</span>
+            <span>{{ annonce.vues }}</span>
+            <span>
+              <span class="badge"
+                [class.active]="annonce.statut === 'ACTIVE'"
+                [class.vendue]="annonce.statut === 'VENDUE'">
+                {{ annonce.statut }}
+              </span>
+            </span>
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+</div>

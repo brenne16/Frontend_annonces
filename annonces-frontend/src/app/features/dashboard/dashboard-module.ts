@@ -1,0 +1,13 @@
+import { NgModule } from '@angular/core';
+import { SharedModule } from '../../shared/shared-module';
+import { DashboardRoutingModule } from './dashboard-routing-module';
+import { Dashboard } from './dashboard/dashboard';
+
+@NgModule({
+  imports: [
+    SharedModule,
+    DashboardRoutingModule,
+    Dashboard
+  ]
+})
+export class DashboardModule { }

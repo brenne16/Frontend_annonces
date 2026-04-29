@@ -1,0 +1,85 @@
+<div class="recherche-container">
+
+  <div class="recherche-header">
+    <h1>Recherche</h1>
+    <p>Trouvez l'annonce qui vous correspond</p>
+  </div>
+
+  <form [formGroup]="searchForm" (ngSubmit)="onSearch()" class="search-form">
+
+    <div class="search-main">
+      <input
+        type="text"
+        formControlName="motCle"
+        placeholder="Que recherchez-vous ?"
+        class="search-input"/>
+      <button type="submit" class="btn-search">Rechercher</button>
+    </div>
+
+    <div class="filters">
+      <div class="filter-group">
+        <label>Catégorie</label>
+        <select formControlName="categorieId">
+          <option value="">Toutes</option>
+          @for (cat of categories; track cat.id) {
+            <option [value]="cat.id">{{ cat.nom }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>Prix min (DH)</label>
+        <input type="number" formControlName="prixMin" placeholder="0"/>
+      </div>
+
+      <div class="filter-group">
+        <label>Prix max (DH)</label>
+        <input type="number" formControlName="prixMax" placeholder="99999"/>
+      </div>
+
+      <div class="filter-group">
+        <label>Ville</label>
+        <input type="text" formControlName="ville" placeholder="Ex: Casablanca"/>
+      </div>
+
+      <button type="button" class="btn-reset" (click)="reinitialiser()">
+        Réinitialiser
+      </button>
+    </div>
+
+  </form>
+
+  @if (isLoading) {
+    <p style="color:#6b7280;padding:2rem">Recherche en cours...</p>
+  } @else if (rechercheLancee) {
+    <div class="resultats-header">
+      <span>{{ resultats.length }} résultat(s) trouvé(s)</span>
+    </div>
+
+    @if (resultats.length > 0) {
+      <div class="resultats-grid">
+        @for (annonce of resultats; track annonce.id) {
+          <a [routerLink]="['/annonces', annonce.id]" class="annonce-card">
+            <img [src]="annonce.imagePrincipaleUrl || 'https://placehold.co/300x200'"
+              [alt]="annonce.titre"/>
+            <div class="card-body">
+              <span class="categorie">{{ annonce.categorieNom }}</span>
+              <h3>{{ annonce.titre }}</h3>
+              <p>{{ annonce.description }}</p>
+              <div class="card-footer">
+                <span class="prix">{{ annonce.prix }} DH</span>
+                <span class="localisation">{{ annonce.ville }}</span>
+              </div>
+            </div>
+          </a>
+        }
+      </div>
+    } @else {
+      <div class="no-results">
+        <p>Aucune annonce ne correspond à votre recherche.</p>
+        <button (click)="reinitialiser()">Effacer les filtres</button>
+      </div>
+    }
+  }
+
+</div>

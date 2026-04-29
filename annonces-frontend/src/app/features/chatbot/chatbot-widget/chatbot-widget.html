@@ -1,0 +1,87 @@
+<!-- Bouton flottant -->
+<button class="chatbot-toggle" (click)="toggleChatbot()">
+  @if (estOuvert) { ✕ } @else { 💬 }
+</button>
+
+<!-- Fenêtre du chatbot -->
+@if (estOuvert) {
+  <div class="chatbot-window">
+
+    <div class="chatbot-header">
+      <div class="header-info">
+        <div class="bot-avatar">🤖</div>
+        <div>
+          <h3>Assistant AnnoncesApp</h3>
+          <span class="status">En ligne</span>
+        </div>
+      </div>
+      <button class="btn-reset" (click)="reinitialiser()" title="Réinitialiser">↺</button>
+    </div>
+
+    <div class="chatbot-messages" #messagesContainer>
+      @for (msg of messages; track msg.timestamp) {
+        <div class="message" [class.user]="msg.role === 'user'"
+          [class.bot]="msg.role === 'bot'">
+
+          @if (msg.role === 'bot') {
+            <div class="bot-icon">🤖</div>
+          }
+
+          <div class="message-bubble">
+            <p>{{ msg.contenu }}</p>
+
+            <!-- Annonces suggérées par le chatbot -->
+            @if (msg.annonces && msg.annonces.length > 0) {
+              <div class="annonces-suggerees">
+                @for (annonce of msg.annonces; track annonce.id) {
+                  <a [routerLink]="['/annonces', annonce.id]"
+                    class="annonce-chip"
+                    (click)="toggleChatbot()">
+                    <img [src]="annonce.imagePrincipaleUrl || 'https://placehold.co/60x60'"
+                      [alt]="annonce.titre"/>
+                    <div class="chip-info">
+                      <span class="chip-titre">{{ annonce.titre }}</span>
+                      <span class="chip-prix">{{ annonce.prix }} DH</span>
+                    </div>
+                  </a>
+                }
+              </div>
+            }
+
+            <span class="message-time">
+              {{ msg.timestamp | date:'HH:mm' }}
+            </span>
+          </div>
+
+          @if (msg.role === 'user') {
+            <div class="user-icon">👤</div>
+          }
+        </div>
+      }
+
+      @if (isLoading) {
+        <div class="message bot">
+          <div class="bot-icon">🤖</div>
+          <div class="message-bubble loading">
+            <span></span><span></span><span></span>
+          </div>
+        </div>
+      }
+    </div>
+
+    <div class="chatbot-input">
+      <input
+        type="text"
+        [(ngModel)]="inputMessage"
+        (keydown)="onKeydown($event)"
+        placeholder="Tapez votre message..."
+        [disabled]="isLoading"/>
+      <button
+        (click)="envoyerMessage()"
+        [disabled]="!inputMessage.trim() || isLoading">
+        ➤
+      </button>
+    </div>
+
+  </div>
+}

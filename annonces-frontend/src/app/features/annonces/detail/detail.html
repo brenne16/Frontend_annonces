@@ -1,0 +1,111 @@
+<div class="detail-container">
+
+  @if (isLoading) {
+    <div class="loading"><p>Chargement...</p></div>
+  } @else if (erreur) {
+    <div class="not-found">
+      <p>{{ erreur }}</p>
+      <a routerLink="/annonces">Retour aux annonces</a>
+    </div>
+  } @else if (annonce) {
+
+    <a routerLink="/annonces" class="btn-retour">← Retour aux annonces</a>
+
+    <div class="detail-layout">
+
+      <div class="detail-left">
+        <img
+          [src]="annonce.imagePrincipaleUrl || 'https://placehold.co/600x400'"
+          [alt]="annonce.titre"
+          class="detail-image"/>
+
+        @if (annonce.imageUrls && annonce.imageUrls.length > 1) {
+          <div class="images-secondaires">
+            @for (img of annonce.imageUrls.slice(1, 4); track img) {
+              <img [src]="img" [alt]="annonce.titre"/>
+            }
+          </div>
+        }
+
+        <div class="detail-info">
+          <span class="categorie">{{ annonce.categorieNom }}</span>
+          <h1>{{ annonce.titre }}</h1>
+          <p class="prix">{{ annonce.prix }} DH</p>
+          <p class="localisation">
+            {{ annonce.ville }} · Publié le {{ annonce.createdAt | date:'dd/MM/yyyy' }}
+          </p>
+
+          @if (annonce.tags && annonce.tags.length > 0) {
+            <div class="tags">
+              @for (tag of annonce.tags; track tag) {
+                <span class="tag">{{ tag }}</span>
+              }
+            </div>
+          }
+
+          <div class="description">
+            <h3>Description</h3>
+            <p>{{ annonce.description }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-right">
+        <div class="vendeur-card">
+          <h3>Vendeur</h3>
+          <div class="vendeur-info">
+            <div class="avatar">
+              {{ annonce.vendeurPrenom[0] }}{{ annonce.vendeurNom[0] }}
+            </div>
+            <span>{{ annonce.vendeurPrenom }} {{ annonce.vendeurNom }}</span>
+          </div>
+
+          @if (messageSucces) {
+            <div class="message-succes">✓ Message envoyé !</div>
+          }
+
+          @if (estConnecte) {
+            @if (!messageVisible) {
+              <button class="btn-contacter" (click)="ouvrirMessage()">
+                Contacter le vendeur
+              </button>
+              <button
+                class="btn-favori"
+                [class.actif]="estFavori"
+                [disabled]="favoriEnCours"
+                (click)="toggleFavori()">
+                {{ estFavori ? '❤ Retirer des favoris' : '♡ Ajouter aux favoris' }}
+              </button>
+            } @else {
+              <div class="message-form">
+                <textarea
+                  [(ngModel)]="messageTexte"
+                  placeholder="Votre message..."
+                  rows="4">
+                </textarea>
+                <div class="message-actions">
+                  <button class="btn-annuler-msg"
+                    (click)="messageVisible = false">
+                    Annuler
+                  </button>
+                  <button class="btn-envoyer"
+                    [disabled]="!messageTexte.trim() || messageEnvoi"
+                    (click)="envoyerMessage()">
+                    @if (messageEnvoi) { Envoi... }
+                    @else { Envoyer }
+                  </button>
+                </div>
+              </div>
+            }
+          } @else {
+            <a routerLink="/auth/login" class="btn-contacter">
+              Connectez-vous pour contacter
+            </a>
+          }
+        </div>
+      </div>
+
+    </div>
+  }
+
+</div>

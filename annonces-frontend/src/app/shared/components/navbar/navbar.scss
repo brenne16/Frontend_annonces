@@ -1,0 +1,89 @@
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  height: 64px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+
+  .navbar-brand a {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #3b82f6;
+    text-decoration: none;
+  }
+
+  .navbar-links {
+    display: flex;
+    gap: 2rem;
+
+    a {
+      text-decoration: none;
+      color: #6b7280;
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: color 0.2s;
+
+      &:hover, &.active { color: #3b82f6; }
+    }
+  }
+
+  .navbar-actions {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+
+    a, button {
+      text-decoration: none;
+      padding: 0.5rem 1.2rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.2s;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btn-login {
+      color: #3b82f6;
+      border: 1px solid #3b82f6 !important;
+      background: transparent;
+      &:hover { background-color: #eff6ff; }
+    }
+
+    .btn-publish {
+      background-color: #3b82f6;
+      color: white;
+      &:hover { background-color: #2563eb; }
+    }
+
+    .btn-dashboard {
+      color: #374151;
+      background: #f3f4f6;
+      &:hover { background: #e5e7eb; }
+    }
+
+    .btn-admin {
+      color: #7c3aed;
+      background: #ede9fe;
+      &:hover { background: #ddd6fe; }
+    }
+
+    .btn-logout {
+      color: #ef4444;
+      background: transparent;
+      border: 1px solid #ef4444 !important;
+      &:hover { background: #fef2f2; }
+    }
+  }
+}
+
+main {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}

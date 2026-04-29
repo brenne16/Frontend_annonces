@@ -1,0 +1,56 @@
+<div class="list-container">
+
+  <div class="list-header">
+    <h1>Toutes les annonces</h1>
+    @if (!isLoading) {
+      <span class="count">{{ annoncesFiltrees.length }} annonces</span>
+    }
+    <a routerLink="/annonces/create" class="btn-publier">+ Publier une annonce</a>
+  </div>
+
+  <div class="categories">
+    @for (cat of categories; track cat) {
+      <button
+        class="cat-btn"
+        [class.active]="categorieSelectionnee === cat"
+        (click)="filtrerParCategorie(cat)">
+        {{ cat }}
+      </button>
+    }
+  </div>
+
+  @if (isLoading) {
+    <div class="loading">
+      <p>Chargement des annonces...</p>
+    </div>
+  } @else if (erreur) {
+    <div class="erreur">
+      <p>{{ erreur }}</p>
+      <button (click)="chargerAnnonces()">Réessayer</button>
+    </div>
+  } @else if (annoncesFiltrees.length === 0) {
+    <div class="vide">
+      <p>Aucune annonce disponible pour le moment.</p>
+    </div>
+  } @else {
+    <div class="annonces-grid">
+      @for (annonce of annoncesFiltrees; track annonce.id) {
+        <a [routerLink]="['/annonces', annonce.id]" class="annonce-card">
+          <img
+            [src]="annonce.imagePrincipaleUrl || 'https://placehold.co/300x200'"
+            [alt]="annonce.titre"/>
+          <div class="card-body">
+            <span class="categorie">{{ annonce.categorieNom }}</span>
+            <h3>{{ annonce.titre }}</h3>
+            <p>{{ annonce.description }}</p>
+            <div class="card-footer">
+              <span class="prix">{{ annonce.prix }} DH</span>
+              <span class="localisation">{{ annonce.ville }}</span>
+            </div>
+          </div>
+        </a>
+      }
+    </div>
+  }
+
+</div>
