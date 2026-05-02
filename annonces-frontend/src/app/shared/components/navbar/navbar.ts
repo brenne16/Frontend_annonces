@@ -1,8 +1,8 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { RouterLink, RouterLinkActive, Router, NavigationEnd } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../core/services/auth';
-import { Router } from '@angular/router';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-navbar',
@@ -23,6 +23,14 @@ export class Navbar implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    // Vérifie l'état à chaque changement de page
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe(() => {
+      this.verifierConnexion();
+    });
+
+    // Vérifie au démarrage
     this.verifierConnexion();
   }
 
@@ -31,16 +39,16 @@ export class Navbar implements OnInit {
     if (this.estConnecte) {
       this.userPrenom = localStorage.getItem('userPrenom') || '';
       this.userRole = localStorage.getItem('userRole') || '';
+    } else {
+      this.userPrenom = '';
+      this.userRole = '';
     }
     this.cdr.detectChanges();
   }
 
   seDeconnecter(): void {
     this.authService.logout();
-    this.estConnecte = false;
-    this.userPrenom = '';
-    this.userRole = '';
-    this.cdr.detectChanges();
+    this.verifierConnexion();
     this.router.navigate(['/annonces']);
   }
 }

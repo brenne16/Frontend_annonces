@@ -1,59 +1,175 @@
-# AnnoncesFrontend
+# 🛒 AnnoncesApp — Plateforme de petites annonces intelligente
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.1.4.
+> Projet tutoré — THE GC4 TEAM | ENSI  
+> Développement d'une plateforme de petites annonces avec moteur de recommandations personnalisées et chatbot intelligent basé sur IA
 
-## Development server
+---
 
-To start a local development server, run:
+## 📋 Description
+
+AnnoncesApp est une marketplace intelligente inspirée d'Avito et Leboncoin, permettant aux utilisateurs de publier, rechercher et gérer des annonces. La plateforme intègre un moteur de recommandations IA et un chatbot capable de comprendre le langage naturel pour assister les utilisateurs dans leurs recherches.
+
+---
+
+## 👥 Équipe
+
+| Nom | Rôle | Responsabilités |
+|-----|------|----------------|
+| **Brenne ITSOUHOU** | Chef de projet · Frontend · DevOps | Angular, UI/UX, CI/CD, AWS |
+| **Emmanuel** | Backend · Sécurité · IA | Spring Boot, PostgreSQL, JWT, IA |
+
+---
+
+## 🏗️ Architecture
+annonces-platform/
+├── frontend/          # Application Angular 21
+├── backend/           # API REST Spring Boot
+├── ia-service/        # Microservice IA Python
+├── infra/             # Docker, CI/CD
+└── docs/              # Documentation
+
+### Stack technique
+
+**Frontend**
+- Angular 21 (Standalone Components, Lazy Loading)
+- TypeScript
+- SCSS
+
+**Backend**
+- Java 21 + Spring Boot 3
+- Spring Security + JWT
+- PostgreSQL + Hibernate
+- Full-text search (PostgreSQL FTS)
+
+**IA**
+- Python FastAPI
+- NLP pour le chatbot
+- Collaborative Filtering + Content-Based Filtering
+
+**Infrastructure**
+- Docker + Docker Compose
+- GitHub Actions (CI/CD)
+- AWS EC2 + S3
+
+---
+
+## ✨ Fonctionnalités
+
+### 📢 Gestion des annonces
+- Créer, modifier, supprimer des annonces
+- Upload d'images multiples
+- Catégorisation automatique par IA
+- Filtres par catégorie, prix, localisation
+
+### 🔍 Recherche intelligente
+- Recherche full-text
+- Filtres avancés (catégorie, prix, ville)
+- Suggestions automatiques
+
+### 🤖 Chatbot IA
+- Compréhension du langage naturel
+- Recherche d'annonces par conversation
+- Suggestions personnalisées
+
+### 📊 Dashboard vendeur
+- Statistiques (vues, favoris, prix moyen)
+- Gestion du statut des annonces
+- Top annonces les plus vues
+- Messagerie intégrée
+
+### ❤️ Favoris & Messagerie
+- Système de favoris
+- Messagerie entre acheteurs et vendeurs
+- Notifications de nouveaux messages
+
+### 🔐 Authentification
+- Inscription / Connexion sécurisée
+- JWT avec refresh token
+- Gestion des rôles (USER, ADMIN)
+
+---
+
+## 🚀 Installation et démarrage
+
+### Prérequis
+- Node.js 22+
+- Java 21+
+- PostgreSQL 15+
+- Python 3.11+
+- Docker (optionnel)
+
+### 1. Cloner le dépôt
 
 ```bash
+git clone https://github.com/brenne16/annonces-platform.git
+cd annonces-platform
+```
+
+### 2. Démarrer le Backend
+
+```bash
+cd backend
+# Configurer application.properties avec vos credentials PostgreSQL
+./mvnw spring-boot:run
+# API disponible sur http://localhost:8080
+```
+
+### 3. Démarrer le Frontend
+
+```bash
+cd frontend/annonces-frontend
+npm install
 ng serve
+# Application disponible sur http://localhost:4200
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+### 4. Démarrer avec Docker (recommandé)
 
 ```bash
-ng generate component component-name
+docker-compose up -d
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+---
 
-```bash
-ng generate --help
-```
+## 🔌 API Endpoints principaux
 
-## Building
+| Méthode | Endpoint | Description | Auth |
+|---------|----------|-------------|------|
+| POST | `/api/auth/register` | Inscription | ❌ |
+| POST | `/api/auth/login` | Connexion | ❌ |
+| GET | `/api/annonces` | Liste des annonces | ❌ |
+| POST | `/api/annonces` | Créer une annonce | ✅ |
+| GET | `/api/annonces/{id}` | Détail annonce | ❌ |
+| PATCH | `/api/annonces/{id}/statut` | Changer statut | ✅ |
+| GET | `/api/categories` | Liste catégories | ❌ |
+| GET | `/api/favoris` | Mes favoris | ✅ |
+| POST | `/api/favoris/{id}` | Toggle favori | ✅ |
+| GET | `/api/messages` | Mes messages | ✅ |
+| POST | `/api/messages` | Envoyer message | ✅ |
+| GET | `/api/dashboard/vendeur` | Stats vendeur | ✅ |
+| POST | `/api/ia/chatbot` | Chatbot IA | ✅ |
 
-To build the project run:
+---
 
-```bash
-ng build
-```
+## 📁 Structure Frontend
+src/app/
+├── core/
+│   ├── guards/        # AuthGuard
+│   ├── interceptors/  # JWT Interceptor
+│   └── services/      # AuthService, AnnonceService
+├── features/
+│   ├── annonces/      # Liste, Détail, Création
+│   ├── auth/          # Login, Register
+│   ├── chatbot/       # Widget chatbot IA
+│   ├── dashboard/     # Dashboard vendeur
+│   ├── recherche/     # Recherche avancée
+│   └── recommandations/
+└── shared/
+└── components/    # Navbar, Footer, CardAnnonce
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+---
 
-## Running unit tests
+## 📄 Licence
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Projet académique — ENSI 2025-2026  
+THE GC4 TEAM — Tous droits réservés

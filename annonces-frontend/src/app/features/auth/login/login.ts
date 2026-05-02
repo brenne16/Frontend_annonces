@@ -15,6 +15,7 @@ export class Login {
   loginForm: FormGroup;
   isLoading: boolean = false;
   errorMessage: string = '';
+  showPassword: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -31,6 +32,11 @@ export class Login {
   get email() { return this.loginForm.get('email'); }
   get motDePasse() { return this.loginForm.get('motDePasse'); }
 
+  togglePassword(): void {
+    this.showPassword = !this.showPassword;
+    this.cdr.detectChanges();
+  }
+
   onSubmit(): void {
     if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
@@ -44,9 +50,7 @@ export class Login {
 
     this.authService.login(email, motDePasse).subscribe({
       next: (response) => {
-        // Le backend retourne accessToken et non token
         this.authService.saveToken(response.accessToken);
-        // Sauvegarde aussi les infos utilisateur
         localStorage.setItem('userId', response.userId);
         localStorage.setItem('userNom', response.nom);
         localStorage.setItem('userPrenom', response.prenom);

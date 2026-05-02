@@ -41,34 +41,43 @@
       </div>
 
       <div class="form-group">
-        <label for="motDePasse">Mot de passe</label>
-        <input
-          id="motDePasse"
-          type="password"
-          formControlName="motDePasse"
-          placeholder="Minimum 6 caractères"
-          [class.error]="motDePasse?.invalid && motDePasse?.touched"/>
-        @if (motDePasse?.invalid && motDePasse?.touched) {
-          <span class="error-msg">
-            @if (motDePasse?.errors?.['required']) { Le mot de passe est obligatoire }
-            @if (motDePasse?.errors?.['minlength']) { Minimum 6 caractères requis }
-          </span>
-        }
-      </div>
+  <label for="motDePasse">Mot de passe</label>
+  <div class="input-password">
+    <input
+      id="motDePasse"
+      [type]="showPassword ? 'text' : 'password'"
+      formControlName="motDePasse"
+      placeholder="Minimum 6 caractères"
+      [class.error]="motDePasse?.invalid && motDePasse?.touched"/>
+    <button type="button" class="toggle-password" (click)="togglePassword()">
+      {{ showPassword ? '🙈' : '👁️' }}
+    </button>
+  </div>
+  @if (motDePasse?.invalid && motDePasse?.touched) {
+    <span class="error-msg">
+      @if (motDePasse?.errors?.['required']) { Le mot de passe est obligatoire }
+      @if (motDePasse?.errors?.['minlength']) { Minimum 6 caractères requis }
+    </span>
+  }
+</div>
 
-      <div class="form-group">
-        <label for="confirmMotDePasse">Confirmer le mot de passe</label>
-        <input
-          id="confirmMotDePasse"
-          type="password"
-          formControlName="confirmMotDePasse"
-          placeholder="Répétez votre mot de passe"
-          [class.error]="confirmMotDePasse?.touched && registerForm.errors?.['passwordsMismatch']"/>
-        @if (confirmMotDePasse?.touched && registerForm.errors?.['passwordsMismatch']) {
-          <span class="error-msg">Les mots de passe ne correspondent pas</span>
-        }
-      </div>
-
+<div class="form-group">
+  <label for="confirmMotDePasse">Confirmer le mot de passe</label>
+  <div class="input-password">
+    <input
+      id="confirmMotDePasse"
+      [type]="showConfirmPassword ? 'text' : 'password'"
+      formControlName="confirmMotDePasse"
+      placeholder="Répétez votre mot de passe"
+      [class.error]="confirmMotDePasse?.touched && registerForm.errors?.['passwordsMismatch']"/>
+    <button type="button" class="toggle-password" (click)="toggleConfirmPassword()">
+      {{ showConfirmPassword ? '🙈' : '👁️' }}
+    </button>
+  </div>
+  @if (confirmMotDePasse?.touched && registerForm.errors?.['passwordsMismatch']) {
+    <span class="error-msg">Les mots de passe ne correspondent pas</span>
+  }
+</div>
       @if (errorMessage) {
         <div class="alert-error">{{ errorMessage }}</div>
       }
