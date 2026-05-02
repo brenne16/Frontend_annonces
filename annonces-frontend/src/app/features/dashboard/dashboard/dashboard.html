@@ -8,7 +8,6 @@
     <a routerLink="/annonces/create" class="btn-nouvelle">+ Nouvelle annonce</a>
   </div>
 
-  <!-- Stats cards -->
   @if (stats) {
     <div class="stats-grid">
       <div class="stat-card">
@@ -44,7 +43,6 @@
     </div>
   }
 
-  <!-- Onglets -->
   <div class="onglets">
     <button [class.actif]="ongletActif === 'stats'"
       (click)="changerOnglet('stats')">Mes annonces</button>
@@ -65,7 +63,6 @@
     }
   </div>
 
-  <!-- Onglet Mes annonces -->
   @if (ongletActif === 'stats') {
     <div class="section">
       @if (isLoading) {
@@ -120,7 +117,6 @@
     </div>
   }
 
-  <!-- Onglet Favoris -->
   @if (ongletActif === 'favoris') {
     <div class="section">
       @if (favoris.length === 0) {
@@ -147,9 +143,65 @@
     </div>
   }
 
-  <!-- Onglet Messages -->
   @if (ongletActif === 'messages') {
-    <div class="section">
+  <div class="section">
+
+    @if (conversationOuverte) {
+
+      <!-- Vue conversation ouverte -->
+      <div class="conversation-container">
+        <div class="conversation-header">
+          <button class="btn-retour-msg" (click)="fermerConversation()">
+            ← Retour aux messages
+          </button>
+          <div class="conversation-titre">
+            <strong>
+              {{ conversationOuverte.expediteurPrenom }}
+              {{ conversationOuverte.expediteurNom }}
+            </strong>
+            <span>re: {{ conversationOuverte.annonceTitre }}</span>
+          </div>
+        </div>
+
+        <div class="conversation-messages">
+          @if (chargementConversation) {
+            <p style="text-align:center;color:#6b7280;padding:2rem">
+              Chargement...
+            </p>
+          } @else {
+            @for (msg of messagesConversation; track msg.id) {
+              <div class="conv-message"
+                [class.moi]="estMonMessage(msg)"
+                [class.eux]="!estMonMessage(msg)">
+                <div class="conv-bubble">
+                  <p>{{ msg.contenu }}</p>
+                  <span class="conv-time">
+                    {{ msg.createdAt | date:'dd/MM HH:mm' }}
+                  </span>
+                </div>
+              </div>
+            }
+          }
+        </div>
+
+        <div class="conversation-input">
+          <textarea
+            [(ngModel)]="reponseTexte"
+            (keydown)="onKeydownReponse($event)"
+            placeholder="Votre réponse... (Entrée pour envoyer)"
+            rows="2">
+          </textarea>
+          <button
+            (click)="envoyerReponse()"
+            [disabled]="!reponseTexte.trim() || envoiEnCours">
+            @if (envoiEnCours) { ... } @else { Envoyer }
+          </button>
+        </div>
+      </div>
+
+    } @else {
+
+      <!-- Liste des messages reçus -->
       @if (messages.length === 0) {
         <p style="text-align:center;padding:3rem;color:#6b7280">
           Aucun message pour le moment.
@@ -157,7 +209,10 @@
       } @else {
         <div class="messages-list">
           @for (msg of messages; track msg.id) {
-            <div class="message-item" [class.non-lu]="!msg.lu">
+            <div class="message-item"
+              [class.non-lu]="!msg.lu"
+              (click)="ouvrirConversation(msg)"
+              style="cursor:pointer">
               <div class="message-avatar">
                 {{ msg.expediteurPrenom[0] }}{{ msg.expediteurNom[0] }}
               </div>
@@ -167,7 +222,7 @@
                     {{ msg.expediteurPrenom }} {{ msg.expediteurNom }}
                   </span>
                   <span class="message-annonce">
-                    re: {{ msg.annoncetitre || msg.annonceTitre }}
+                    re: {{ msg.annonceTitre }}
                   </span>
                   <span class="message-date">
                     {{ msg.createdAt | date:'dd/MM/yyyy HH:mm' }}
@@ -175,17 +230,22 @@
                 </div>
                 <p class="message-texte">{{ msg.contenu }}</p>
               </div>
-              @if (!msg.lu) {
-                <span class="badge-nouveau">Nouveau</span>
-              }
+              <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.5rem">
+                @if (!msg.lu) {
+                  <span class="badge-nouveau">Nouveau</span>
+                }
+                <span style="font-size:0.8rem;color:#3b82f6">Voir →</span>
+              </div>
             </div>
           }
         </div>
       }
-    </div>
-  }
 
-  <!-- Onglet Top annonces -->
+    }
+
+  </div>
+}
+
   @if (ongletActif === 'top' && stats?.meilleuresAnnonces) {
     <div class="section">
       <div class="annonces-table">

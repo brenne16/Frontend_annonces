@@ -1,11 +1,12 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { AnnonceService } from '../../../core/services/annonce';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, FormsModule],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss'
 })
@@ -17,8 +18,16 @@ export class Dashboard implements OnInit {
   messages: any[] = [];
   isLoading: boolean = true;
   userPrenom: string = '';
+  userId: string = '';
   actionEnCours: string = '';
   ongletActif: string = 'stats';
+
+  // Conversation
+  conversationOuverte: any = null;
+  messagesConversation: any[] = [];
+  reponseTexte: string = '';
+  envoiEnCours: boolean = false;
+  chargementConversation: boolean = false;
 
   constructor(
     private annonceService: AnnonceService,
@@ -27,49 +36,93 @@ export class Dashboard implements OnInit {
 
   ngOnInit(): void {
     this.userPrenom = localStorage.getItem('userPrenom') || '';
+    this.userId = localStorage.getItem('userId') || '';
     this.chargerDashboard();
   }
 
   chargerDashboard(): void {
-    // Stats dashboard
     this.annonceService.getDashboardVendeur().subscribe({
-      next: (data) => {
-        this.stats = data;
-        this.cdr.detectChanges();
-      },
+      next: (data) => { this.stats = data; this.cdr.detectChanges(); },
       error: () => {}
     });
 
-    // Mes annonces
     this.annonceService.getMesAnnonces().subscribe({
       next: (response) => {
         this.mesAnnonces = response.content || response || [];
         this.isLoading = false;
         this.cdr.detectChanges();
       },
+      error: () => { this.isLoading = false; this.cdr.detectChanges(); }
+    });
+
+    this.annonceService.getMesFavoris().subscribe({
+      next: (data) => { this.favoris = data || []; this.cdr.detectChanges(); },
+      error: () => {}
+    });
+
+    this.chargerMessages();
+  }
+
+  chargerMessages(): void {
+    this.annonceService.getMesMessages().subscribe({
+      next: (data) => { this.messages = data || []; this.cdr.detectChanges(); },
+      error: () => {}
+    });
+  }
+
+  ouvrirConversation(msg: any): void {
+    this.conversationOuverte = msg;
+    this.chargementConversation = true;
+    this.cdr.detectChanges();
+
+    this.annonceService.getConversation(msg.expediteurId).subscribe({
+      next: (data) => {
+        this.messagesConversation = data || [];
+        this.chargementConversation = false;
+        this.cdr.detectChanges();
+      },
       error: () => {
-        this.isLoading = false;
+        this.chargementConversation = false;
         this.cdr.detectChanges();
       }
     });
+  }
 
-    // Favoris
-    this.annonceService.getMesFavoris().subscribe({
-      next: (data) => {
-        this.favoris = data || [];
+  fermerConversation(): void {
+    this.conversationOuverte = null;
+    this.messagesConversation = [];
+    this.reponseTexte = '';
+    this.chargerMessages();
+    this.cdr.detectChanges();
+  }
+
+  envoyerReponse(): void {
+    if (!this.reponseTexte.trim() || this.envoiEnCours) return;
+    this.envoiEnCours = true;
+
+    this.annonceService.repondreMessage(
+      this.conversationOuverte.expediteurId,
+      this.reponseTexte,
+      this.conversationOuverte.annonceId
+    ).subscribe({
+      next: (nouveauMsg) => {
+        this.messagesConversation.push(nouveauMsg);
+        this.reponseTexte = '';
+        this.envoiEnCours = false;
         this.cdr.detectChanges();
       },
-      error: () => {}
-    });
-
-    // Messages
-    this.annonceService.getMesMessages().subscribe({
-      next: (data) => {
-        this.messages = data || [];
+      error: () => {
+        this.envoiEnCours = false;
         this.cdr.detectChanges();
-      },
-      error: () => {}
+      }
     });
+  }
+
+  onKeydownReponse(event: KeyboardEvent): void {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      this.envoyerReponse();
+    }
   }
 
   changerOnglet(onglet: string): void {
@@ -105,5 +158,9 @@ export class Dashboard implements OnInit {
 
   messagesNonLus(): number {
     return this.messages.filter((m: any) => !m.lu).length;
+  }
+
+  estMonMessage(msg: any): boolean {
+    return msg.expediteurId === this.userId;
   }
 }

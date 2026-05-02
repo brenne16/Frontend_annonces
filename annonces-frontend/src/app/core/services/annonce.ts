@@ -82,7 +82,7 @@ envoyerMessage(destinataireId: string, annonceId: string, contenu: string) {
 }
 
 getMesMessages() {
-  return this.http.get<any[]>(`${this.api}/messages`);
+  return this.http.get<any[]>(`${this.api}/messages/recus`);
 }
 
 envoyerMessageChatbot(message: string, sessionId?: string) {
@@ -94,5 +94,17 @@ envoyerMessageChatbot(message: string, sessionId?: string) {
 
 getRecommandations(limit: number = 10) {
   return this.http.get<any>(`${this.api}/ia/recommandations?limit=${limit}`);
+}
+
+getConversation(interlocuteurId: string) {
+  return this.http.get<any[]>(`${this.api}/messages/${interlocuteurId}`);
+}
+
+repondreMessage(destinataireId: string, contenu: string, annonceId?: string) {
+  return this.http.post<any>(`${this.api}/messages`, {
+    destinataireId,
+    contenu,
+    annonceId: annonceId || null
+  });
 }
 }

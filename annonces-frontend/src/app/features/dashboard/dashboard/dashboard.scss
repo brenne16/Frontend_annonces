@@ -276,3 +276,122 @@
     flex-shrink: 0;
   }
 }
+.conversation-container {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 520px;
+}
+
+.conversation-header {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f9fafb;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  .btn-retour-msg {
+    background: none;
+    border: none;
+    color: #3b82f6;
+    font-size: 0.9rem;
+    cursor: pointer;
+    font-weight: 500;
+    padding: 0;
+    white-space: nowrap;
+    &:hover { text-decoration: underline; }
+  }
+
+  .conversation-titre {
+    display: flex;
+    flex-direction: column;
+
+    strong { font-size: 0.95rem; color: #111827; }
+    span { font-size: 0.8rem; color: #3b82f6; }
+  }
+}
+
+.conversation-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  background: #f9fafb;
+}
+
+.conv-message {
+  display: flex;
+
+  &.moi { justify-content: flex-end; }
+  &.eux { justify-content: flex-start; }
+
+  .conv-bubble {
+    max-width: 70%;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+
+    p { font-size: 0.9rem; line-height: 1.5; margin: 0 0 0.3rem; }
+
+    .conv-time {
+      font-size: 0.7rem;
+      color: rgba(255,255,255,0.7);
+      display: block;
+      text-align: right;
+    }
+  }
+
+  &.moi .conv-bubble {
+    background: #3b82f6;
+    color: white;
+    border-radius: 12px 12px 4px 12px;
+  }
+
+  &.eux .conv-bubble {
+    background: white;
+    color: #111827;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px 12px 12px 4px;
+
+    .conv-time { color: #9ca3af; }
+  }
+}
+
+.conversation-input {
+  padding: 0.75rem;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  gap: 0.5rem;
+  background: white;
+
+  textarea {
+    flex: 1;
+    padding: 0.6rem 1rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-family: inherit;
+    resize: none;
+    &:focus { outline: none; border-color: #3b82f6; }
+  }
+
+  button {
+    padding: 0.6rem 1.25rem;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+    white-space: nowrap;
+
+    &:hover:not(:disabled) { background: #2563eb; }
+    &:disabled { opacity: 0.5; cursor: not-allowed; }
+  }
+}
