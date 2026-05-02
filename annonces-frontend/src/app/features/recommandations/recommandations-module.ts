@@ -1,14 +1,13 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-
+import { SharedModule } from '../../shared/shared-module';
 import { RecommandationsRoutingModule } from './recommandations-routing-module';
-
+import { Recommandations } from './recommandations/recommandations';
 
 @NgModule({
-  declarations: [],
   imports: [
-    CommonModule,
-    RecommandationsRoutingModule
+    SharedModule,
+    RecommandationsRoutingModule,
+    Recommandations
   ]
 })
 export class RecommandationsModule { }

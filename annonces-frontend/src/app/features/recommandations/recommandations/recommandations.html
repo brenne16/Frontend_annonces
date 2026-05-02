@@ -1,0 +1,60 @@
+<div class="reco-container">
+
+  <div class="reco-header">
+    <div>
+      <h1>Recommandations personnalisées</h1>
+      <p>Des annonces sélectionnées selon vos préférences</p>
+    </div>
+    @if (methode) {
+      <span class="methode-badge">🤖 {{ methode }}</span>
+    }
+  </div>
+
+  @if (!estConnecte) {
+    <div class="not-connected">
+      <div class="not-connected-icon">🔒</div>
+      <h2>Connectez-vous pour voir vos recommandations</h2>
+      <p>Notre IA analyse votre comportement pour vous proposer les annonces les plus pertinentes.</p>
+      <a routerLink="/auth/login" class="btn-login">Se connecter</a>
+    </div>
+  } @else if (isLoading) {
+    <div class="loading">
+      <div class="loading-spinner"></div>
+      <p>Notre IA analyse vos préférences...</p>
+    </div>
+  } @else if (erreur) {
+    <div class="erreur">
+      <p>{{ erreur }}</p>
+      <button (click)="chargerRecommandations()">Réessayer</button>
+    </div>
+  } @else if (recommandations.length === 0) {
+    <div class="vide">
+      <div class="vide-icon">🔍</div>
+      <h2>Pas encore de recommandations</h2>
+      <p>Naviguez sur la plateforme et consultez des annonces — notre IA apprendra vos préférences.</p>
+      <a routerLink="/annonces" class="btn-explorer">Explorer les annonces</a>
+    </div>
+  } @else {
+    <div class="reco-grid">
+      @for (annonce of recommandations; track annonce.id) {
+        <a [routerLink]="['/annonces', annonce.id]" class="reco-card">
+          <div class="reco-image">
+            <img
+              [src]="annonce.imagePrincipaleUrl || 'https://placehold.co/300x200'"
+              [alt]="annonce.titre"/>
+            <span class="reco-badge">✨ Recommandé</span>
+          </div>
+          <div class="reco-body">
+            <span class="categorie">{{ annonce.categorie }}</span>
+            <h3>{{ annonce.titre }}</h3>
+            <div class="reco-footer">
+              <span class="prix">{{ annonce.prix }} DH</span>
+              <span class="ville">{{ annonce.ville }}</span>
+            </div>
+          </div>
+        </a>
+      }
+    </div>
+  }
+
+</div>

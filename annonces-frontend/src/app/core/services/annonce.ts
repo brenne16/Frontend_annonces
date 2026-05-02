@@ -91,4 +91,8 @@ envoyerMessageChatbot(message: string, sessionId?: string) {
     session_id: sessionId || null
   });
 }
+
+getRecommandations(limit: number = 10) {
+  return this.http.get<any>(`${this.api}/ia/recommandations?limit=${limit}`);
+}
 }
