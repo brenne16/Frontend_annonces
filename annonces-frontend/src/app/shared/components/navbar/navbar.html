@@ -11,17 +11,15 @@
 
   <div class="navbar-actions">
     @if (estConnecte) {
-      <a routerLink="/dashboard" class="btn-dashboard">
-        {{ userPrenom }}
-      </a>
-      @if (userRole === 'ADMIN') {
-        <a routerLink="/dashboard/admin" class="btn-admin">Admin</a>
-      }
-      <a routerLink="/annonces/create" class="btn-publish">Publier</a>
-      <button class="btn-logout" (click)="seDeconnecter()">Déconnexion</button>
-    } @else {
-      <a routerLink="/auth/login" class="btn-login">Connexion</a>
-      <a routerLink="/annonces/create" class="btn-publish">Publier</a>
-    }
+  <a routerLink="/dashboard" class="btn-dashboard">{{ userPrenom }}</a>
+  @if (userRole === 'ADMIN') {
+    <a routerLink="/dashboard/admin" class="btn-admin">⚙ Admin</a>
+  }
+  <a routerLink="/annonces/create" class="btn-publish">Publier</a>
+  <button class="btn-logout" (click)="seDeconnecter()">Déconnexion</button>
+} @else {
+  <a routerLink="/auth/login" class="btn-login">Connexion</a>
+  <a routerLink="/annonces/create" class="btn-publish">Publier</a>
+}
   </div>
 </nav>

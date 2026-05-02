@@ -1,0 +1,174 @@
+<div class="admin-container">
+
+  <div class="admin-header">
+    <div>
+      <h1>⚙ Panel Administrateur</h1>
+      <p>Gestion des utilisateurs et des annonces</p>
+    </div>
+    <a routerLink="/dashboard" class="btn-retour">← Mon dashboard</a>
+  </div>
+
+  <div class="onglets">
+    <button [class.actif]="ongletActif === 'utilisateurs'"
+      (click)="changerOnglet('utilisateurs')">
+      👥 Utilisateurs ({{ utilisateurs.length }})
+    </button>
+    <button [class.actif]="ongletActif === 'annonces'"
+      (click)="changerOnglet('annonces')">
+      📢 Annonces ({{ annonces.length }})
+    </button>
+  </div>
+
+  <!-- Onglet Utilisateurs -->
+  @if (ongletActif === 'utilisateurs') {
+    <div class="section">
+
+      <div class="search-bar">
+        <input
+          type="text"
+          [(ngModel)]="searchUser"
+          placeholder="Rechercher un utilisateur..."
+          (input)="onSearchUser()"/>
+      </div>
+
+      @if (isLoadingUsers) {
+        <p class="loading-txt">Chargement...</p>
+      } @else if (utilisateurs.length === 0) {
+        <p class="vide-txt">Aucun utilisateur trouvé.</p>
+      } @else {
+        <div class="admin-table">
+          <div class="table-header">
+            <span>Utilisateur</span>
+            <span>Email</span>
+            <span>Ville</span>
+            <span>Annonces</span>
+            <span>Vues</span>
+            <span>Rôle</span>
+            <span>Statut</span>
+            <span>Actions</span>
+          </div>
+
+          @for (user of utilisateurs; track user.id) {
+            <div class="table-row" [class.inactif]="!user.actif">
+              <span class="user-info">
+                <div class="user-avatar">
+                  {{ user.prenom[0] }}{{ user.nom[0] }}
+                </div>
+                {{ user.prenom }} {{ user.nom }}
+              </span>
+              <span class="small-txt">{{ user.email }}</span>
+              <span>{{ user.ville || '—' }}</span>
+              <span>{{ user.nbAnnonces }}</span>
+              <span>{{ user.totalVues }}</span>
+              <span>
+                <select
+                  [value]="user.role"
+                  [disabled]="actionUserEnCours === user.id"
+                  (change)="changerRole(user, $any($event.target).value)"
+                  class="role-select"
+                  [class.admin]="user.role === 'ADMIN'">
+                  <option value="USER">USER</option>
+                  <option value="ADMIN">ADMIN</option>
+                </select>
+              </span>
+              <span>
+                <span class="badge-statut"
+                  [class.actif]="user.actif"
+                  [class.inactif-badge]="!user.actif">
+                  {{ user.actif ? 'Actif' : 'Suspendu' }}
+                </span>
+              </span>
+              <span>
+                <button
+                  class="btn-toggle"
+                  [class.suspendre]="user.actif"
+                  [class.reactiver]="!user.actif"
+                  [disabled]="actionUserEnCours === user.id"
+                  (click)="toggleUtilisateur(user)">
+                  {{ user.actif ? 'Suspendre' : 'Réactiver' }}
+                </button>
+              </span>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Onglet Annonces -->
+  @if (ongletActif === 'annonces') {
+    <div class="section">
+
+      <div class="search-bar">
+        <input
+          type="text"
+          [(ngModel)]="searchAnnonce"
+          placeholder="Rechercher une annonce..."
+          (input)="onSearchAnnonce()"/>
+        <select [(ngModel)]="filtreStatut" (change)="onSearchAnnonce()">
+          <option value="">Tous les statuts</option>
+          <option value="ACTIVE">ACTIVE</option>
+          <option value="VENDUE">VENDUE</option>
+          <option value="SUSPENDU">SUSPENDU</option>
+          <option value="EXPIREE">EXPIREE</option>
+        </select>
+      </div>
+
+      @if (isLoadingAnnonces) {
+        <p class="loading-txt">Chargement...</p>
+      } @else if (annonces.length === 0) {
+        <p class="vide-txt">Aucune annonce trouvée.</p>
+      } @else {
+        <div class="admin-table">
+          <div class="table-header" style="grid-template-columns: 3fr 1fr 1fr 1fr 1fr 1.5fr">
+            <span>Annonce</span>
+            <span>Prix</span>
+            <span>Ville</span>
+            <span>Vues</span>
+            <span>Statut</span>
+            <span>Actions</span>
+          </div>
+
+          @for (annonce of annonces; track annonce.id) {
+            <div class="table-row"
+              style="grid-template-columns: 3fr 1fr 1fr 1fr 1fr 1.5fr"
+              [class.suspendu]="annonce.statut === 'SUSPENDU'">
+              <span class="annonce-titre">{{ annonce.titre }}</span>
+              <span>{{ annonce.prix }} DH</span>
+              <span>{{ annonce.ville }}</span>
+              <span>{{ annonce.vues }}</span>
+              <span>
+                <span class="badge-statut"
+                  [class.actif]="annonce.statut === 'ACTIVE'"
+                  [class.vendu]="annonce.statut === 'VENDUE'"
+                  [class.suspendu-badge]="annonce.statut === 'SUSPENDU'">
+                  {{ annonce.statut }}
+                </span>
+              </span>
+              <span class="actions">
+                <a [routerLink]="['/annonces', annonce.id]"
+                  class="btn-voir">Voir</a>
+                @if (annonce.statut !== 'SUSPENDU') {
+                  <button
+                    class="btn-toggle suspendre"
+                    [disabled]="actionAnnonceEnCours === annonce.id"
+                    (click)="changerStatutAnnonce(annonce, 'SUSPENDU')">
+                    Suspendre
+                  </button>
+                } @else {
+                  <button
+                    class="btn-toggle reactiver"
+                    [disabled]="actionAnnonceEnCours === annonce.id"
+                    (click)="changerStatutAnnonce(annonce, 'ACTIVE')">
+                    Réactiver
+                  </button>
+                }
+              </span>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+
+</div>

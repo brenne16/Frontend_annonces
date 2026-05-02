@@ -107,4 +107,29 @@ repondreMessage(destinataireId: string, contenu: string, annonceId?: string) {
     annonceId: annonceId || null
   });
 }
+// Admin - Utilisateurs
+getAdminUtilisateurs(search = '', page = 0, size = 20) {
+  return this.http.get<any>(
+    `${this.api}/admin/utilisateurs?search=${search}&page=${page}&size=${size}`
+  );
+}
+
+toggleUtilisateur(id: string) {
+  return this.http.patch<any>(`${this.api}/admin/utilisateurs/${id}/toggle`, {});
+}
+
+changerRoleUtilisateur(id: string, role: string) {
+  return this.http.patch<any>(`${this.api}/admin/utilisateurs/${id}/role`, { role });
+}
+
+// Admin - Annonces
+getAdminAnnonces(search = '', statut = '', page = 0, size = 20) {
+  return this.http.get<any>(
+    `${this.api}/admin/annonces?search=${search}&statut=${statut}&page=${page}&size=${size}`
+  );
+}
+
+changerStatutAdmin(id: string, statut: string) {
+  return this.http.patch<any>(`${this.api}/admin/annonces/${id}/statut`, { statut });
+}
 }
