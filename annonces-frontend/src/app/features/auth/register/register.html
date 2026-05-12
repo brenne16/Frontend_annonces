@@ -8,20 +8,38 @@
 
     <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
 
-      <div class="form-group">
-        <label for="nom">Nom complet</label>
-        <input
-          id="nom"
-          type="text"
-          formControlName="nom"
-          placeholder="Votre nom et prénom"
-          [class.error]="nom?.invalid && nom?.touched"/>
-        @if (nom?.invalid && nom?.touched) {
-          <span class="error-msg">
-            @if (nom?.errors?.['required']) { Le nom est obligatoire }
-            @if (nom?.errors?.['minlength']) { Minimum 2 caractères requis }
-          </span>
-        }
+      <div class="form-row">
+        <div class="form-group">
+          <label for="prenom">Prénom</label>
+          <input
+            id="prenom"
+            type="text"
+            formControlName="prenom"
+            placeholder="Votre prénom"
+            [class.error]="prenom?.invalid && prenom?.touched"/>
+          @if (prenom?.invalid && prenom?.touched) {
+            <span class="error-msg">
+              @if (prenom?.errors?.['required']) { Le prénom est obligatoire }
+              @if (prenom?.errors?.['minlength']) { Minimum 2 caractères }
+            </span>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="nom">Nom</label>
+          <input
+            id="nom"
+            type="text"
+            formControlName="nom"
+            placeholder="Votre nom"
+            [class.error]="nom?.invalid && nom?.touched"/>
+          @if (nom?.invalid && nom?.touched) {
+            <span class="error-msg">
+              @if (nom?.errors?.['required']) { Le nom est obligatoire }
+              @if (nom?.errors?.['minlength']) { Minimum 2 caractères }
+            </span>
+          }
+        </div>
       </div>
 
       <div class="form-group">
@@ -41,43 +59,64 @@
       </div>
 
       <div class="form-group">
-  <label for="motDePasse">Mot de passe</label>
-  <div class="input-password">
-    <input
-      id="motDePasse"
-      [type]="showPassword ? 'text' : 'password'"
-      formControlName="motDePasse"
-      placeholder="Minimum 6 caractères"
-      [class.error]="motDePasse?.invalid && motDePasse?.touched"/>
-    <button type="button" class="toggle-password" (click)="togglePassword()">
-      {{ showPassword ? '🙈' : '👁️' }}
-    </button>
-  </div>
-  @if (motDePasse?.invalid && motDePasse?.touched) {
-    <span class="error-msg">
-      @if (motDePasse?.errors?.['required']) { Le mot de passe est obligatoire }
-      @if (motDePasse?.errors?.['minlength']) { Minimum 6 caractères requis }
-    </span>
-  }
-</div>
+        <label for="password">Mot de passe</label>
+        <div class="input-password">
+          <input
+            id="password"
+            [type]="showPassword ? 'text' : 'password'"
+            formControlName="password"
+            placeholder="Minimum 6 caractères"
+            [class.error]="password?.invalid && password?.touched"/>
+          <button type="button" class="toggle-password" (click)="togglePassword()">
+            {{ showPassword ? '🙈' : '👁️' }}
+          </button>
+        </div>
+        @if (password?.invalid && password?.touched) {
+          <span class="error-msg">
+            @if (password?.errors?.['required']) { Le mot de passe est obligatoire }
+            @if (password?.errors?.['minlength']) { Minimum 6 caractères requis }
+          </span>
+        }
+      </div>
 
-<div class="form-group">
-  <label for="confirmMotDePasse">Confirmer le mot de passe</label>
-  <div class="input-password">
-    <input
-      id="confirmMotDePasse"
-      [type]="showConfirmPassword ? 'text' : 'password'"
-      formControlName="confirmMotDePasse"
-      placeholder="Répétez votre mot de passe"
-      [class.error]="confirmMotDePasse?.touched && registerForm.errors?.['passwordsMismatch']"/>
-    <button type="button" class="toggle-password" (click)="toggleConfirmPassword()">
-      {{ showConfirmPassword ? '🙈' : '👁️' }}
-    </button>
-  </div>
-  @if (confirmMotDePasse?.touched && registerForm.errors?.['passwordsMismatch']) {
-    <span class="error-msg">Les mots de passe ne correspondent pas</span>
-  }
-</div>
+      <div class="form-group">
+        <label for="confirmPassword">Confirmer le mot de passe</label>
+        <div class="input-password">
+          <input
+            id="confirmPassword"
+            [type]="showConfirmPassword ? 'text' : 'password'"
+            formControlName="confirmPassword"
+            placeholder="Répétez votre mot de passe"
+            [class.error]="confirmPassword?.touched && registerForm.errors?.['passwordsMismatch']"/>
+          <button type="button" class="toggle-password" (click)="toggleConfirmPassword()">
+            {{ showConfirmPassword ? '🙈' : '👁️' }}
+          </button>
+        </div>
+        @if (confirmPassword?.touched && registerForm.errors?.['passwordsMismatch']) {
+          <span class="error-msg">Les mots de passe ne correspondent pas</span>
+        }
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="telephone">Téléphone <span class="optionnel">(optionnel)</span></label>
+          <input
+            id="telephone"
+            type="tel"
+            formControlName="telephone"
+            placeholder="06 00 00 00 00"/>
+        </div>
+
+        <div class="form-group">
+          <label for="ville">Ville <span class="optionnel">(optionnel)</span></label>
+          <input
+            id="ville"
+            type="text"
+            formControlName="ville"
+            placeholder="Ex: Paris"/>
+        </div>
+      </div>
+
       @if (errorMessage) {
         <div class="alert-error">{{ errorMessage }}</div>
       }

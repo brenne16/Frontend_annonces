@@ -9,15 +9,21 @@
   </div>
 
   <div class="categories">
-    @for (cat of categories; track cat) {
-      <button
-        class="cat-btn"
-        [class.active]="categorieSelectionnee === cat"
-        (click)="filtrerParCategorie(cat)">
-        {{ cat }}
-      </button>
-    }
-  </div>
+  <button
+    class="cat-btn"
+    [class.active]="categorieSelectionnee === null"
+    (click)="filtrerParCategorie(null)">
+    Toutes
+  </button>
+  @for (cat of categories; track cat.id) {
+    <button
+      class="cat-btn"
+      [class.active]="categorieSelectionnee?.id === cat.id"
+      (click)="filtrerParCategorie(cat)">
+      {{ cat.nom }}
+    </button>
+  }
+</div>
 
   @if (isLoading) {
     <div class="loading">

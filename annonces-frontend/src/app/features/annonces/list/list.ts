@@ -29,8 +29,8 @@ interface Annonce {
 export class List implements OnInit {
 
   annonces: Annonce[] = [];
-  categories: string[] = ['Toutes'];
-  categorieSelectionnee: string = 'Toutes';
+  categories: any[] = [];
+  categorieSelectionnee: any = null;
   isLoading: boolean = true;
   erreur: string = '';
 
@@ -44,43 +44,44 @@ export class List implements OnInit {
     this.chargerCategories();
   }
 
-  chargerAnnonces(): void {
-    this.isLoading = true;
-    this.erreur = '';
-    this.annonceService.rechercher({
-      categorieId: this.categorieSelectionnee === 'Toutes' ? null : this.categorieSelectionnee,
-      page: 0,
-      size: 12
-    }).subscribe({
-      next: (response) => {
-        this.annonces = response.content || [];
-        this.isLoading = false;
-        this.cdr.detectChanges();
-      },
-      error: () => {
-        this.erreur = 'Impossible de charger les annonces';
-        this.isLoading = false;
-        this.cdr.detectChanges();
-      }
-    });
-  }
+ chargerAnnonces(): void {
+  this.isLoading = true;
+  this.erreur = '';
+  this.annonceService.rechercher({
+    categorieId: this.categorieSelectionnee?.id || null,
+    page: 0,
+    size: 12
+  }).subscribe({
+    next: (response) => {
+      this.annonces = response.content || [];
+      this.isLoading = false;
+      this.cdr.detectChanges();
+    },
+    error: () => {
+      this.erreur = 'Impossible de charger les annonces';
+      this.isLoading = false;
+      this.cdr.detectChanges();
+    }
+  });
+}
 
-  chargerCategories(): void {
-    this.annonceService.getCategories().subscribe({
-      next: (cats) => {
-        this.categories = ['Toutes', ...cats.map((c: any) => c.nom)];
-        this.cdr.detectChanges();
-      },
-      error: () => {}
-    });
+chargerCategories(): void {
+  this.annonceService.getCategories().subscribe({
+    next: (cats) => {
+      this.categories = cats;
+      this.cdr.detectChanges();
+    },
+    error: () => {}
+  });
+
   }
 
   get annoncesFiltrees(): Annonce[] {
     return this.annonces;
   }
 
-  filtrerParCategorie(categorie: string): void {
-    this.categorieSelectionnee = categorie;
-    this.chargerAnnonces();
-  }
+ filtrerParCategorie(categorie: any): void {
+  this.categorieSelectionnee = categorie;
+  this.chargerAnnonces();
+}
 }

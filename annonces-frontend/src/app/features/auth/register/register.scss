@@ -151,3 +151,19 @@
     &:hover { opacity: 1; }
   }
 }
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 0;
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.optionnel {
+  font-size: 0.78rem;
+  color: #9ca3af;
+  font-weight: 400;
+}

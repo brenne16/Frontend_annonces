@@ -25,23 +25,27 @@ export class Register {
     private cdr: ChangeDetectorRef
   ) {
     this.registerForm = this.fb.group({
+      prenom: ['', [Validators.required, Validators.minLength(2)]],
       nom: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
-      motDePasse: ['', [Validators.required, Validators.minLength(6)]],
-      confirmMotDePasse: ['', Validators.required]
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      confirmPassword: ['', Validators.required],
+      telephone: [''],
+      ville: ['']
     }, { validators: this.passwordsMatch });
   }
 
   passwordsMatch(form: FormGroup) {
-    const mdp = form.get('motDePasse')?.value;
-    const confirm = form.get('confirmMotDePasse')?.value;
+    const mdp = form.get('password')?.value;
+    const confirm = form.get('confirmPassword')?.value;
     return mdp === confirm ? null : { passwordsMismatch: true };
   }
 
+  get prenom() { return this.registerForm.get('prenom'); }
   get nom() { return this.registerForm.get('nom'); }
   get email() { return this.registerForm.get('email'); }
-  get motDePasse() { return this.registerForm.get('motDePasse'); }
-  get confirmMotDePasse() { return this.registerForm.get('confirmMotDePasse'); }
+  get password() { return this.registerForm.get('password'); }
+  get confirmPassword() { return this.registerForm.get('confirmPassword'); }
 
   togglePassword(): void {
     this.showPassword = !this.showPassword;
@@ -62,9 +66,16 @@ export class Register {
     this.isLoading = true;
     this.errorMessage = '';
 
-    const { nom, email, motDePasse } = this.registerForm.value;
+    const { prenom, nom, email, password, telephone, ville } = this.registerForm.value;
 
-    this.authService.register({ nom, email, motDePasse }).subscribe({
+    this.authService.register({
+      prenom,
+      nom,
+      email,
+      password,
+      telephone: telephone || '',
+      ville: ville || ''
+    }).subscribe({
       next: () => {
         this.router.navigate(['/auth/login']);
         this.cdr.detectChanges();
